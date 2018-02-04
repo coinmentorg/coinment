@@ -48,7 +48,7 @@ a{
   }
   *zoom:1;
 }
-.select-no{
+.no-select{
   -moz-user-select:none;
   -webkit-user-select:none;
 }

@@ -5,6 +5,7 @@ import HotRank from '@/components/rank/Hot'
 import NewRank from '@/components/rank/New'
 import HighRank from '@/components/rank/High'
 import Wallet from '@/components/wallet/Wallet'
+import PostComment from '@/components/comment/Post'
 
 Vue.use(Router)
 
@@ -12,15 +13,20 @@ export default new Router({
   routes: [
     {
       path: '/wallet',
-      compoment: Wallet,
-      name: 'Wallet'
+      name: 'Wallet',
+      component: Wallet
+    },
+    {
+      path: '/post',
+      name: 'Post',
+      component: PostComment
     },
     {
       path: '/rank',
       component: Rank,
       children:[
         {
-          path: '/',
+          path: '',
           redirect: 'hot'
         },
         {
