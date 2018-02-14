@@ -1,0 +1,49 @@
+{
+  "manifest_version": 2,
+  "name": "coinment",
+  "version": "0.0.1",
+  "description": "test",
+  "content_scripts":[
+    {
+      "matches": ["<all_urls>"],
+      "js": ["./static/js/libs/jquery.js", "./static/js/libs/vue.js", "./static/js/libs/axios.js",
+        "./static/js/content-scripts/test.entry.js", "./static/js/content-scripts/test.bundle.js"]
+    }
+  ],
+  "icons": {
+    "16": "static/img/icon16.png",
+    "48": "static/img/icon48.png",
+    "128": "static/img/icon128.png"
+  },
+  "background": {
+    "scripts": ["./static/js/manifest.js","./static/js/vendor.js","./static/js/background.js"],
+    "persistent": true
+  },
+  "browser_action": {
+    "default_icon": {
+      "19": "static/img/icon19.png",
+      "38": "static/img/icon38.png"
+    },
+    "default_title": "coinment",
+    "default_popup": "index.html"
+  },
+  "permissions": [
+    "cookies",
+    "tabs",
+    "proxy",
+    "notifications",
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "webNavigation",
+    "contextMenus",
+    "unlimitedStorage",
+    "<all_urls>"
+  ],
+  "externally_connectable": {
+    "matches": [
+      "*://*.coinment.org/*"
+    ]
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}

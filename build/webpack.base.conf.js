@@ -4,26 +4,37 @@ const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 
+// happy pack optimize
+var HappyPack = require('happypack')
+var os = require('os')
+var happyThreadPool = HappyPack.ThreadPool({size: os.cpus().length})
+
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
-
+const entries = {
+  app: './src/main.js',
+  background: './src/chrome/background/main.js',
+};
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
-  entry: {
-    app: './src/main.js'
-  },
+  entry: entries,
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
-    publicPath: process.env.NODE_ENV === 'production'
+    publicPath: process.env.NODE_ENV.match('production')
       ? config.build.assetsPublicPath
       : config.dev.assetsPublicPath
   },
   resolve: {
     extensions: ['.js', '.vue', '.json'],
+    modules: [
+      path.resolve(__dirname, "../src"),
+      path.resolve(__dirname, "../chrome"),
+      'node_modules'
+    ],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
@@ -33,20 +44,29 @@ module.exports = {
     rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: vueLoaderConfig
+        use: {
+          loader: 'HappyPack/loader?id=vueHappy',
+        }
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+        use: {
+          loader: 'HappyPack/loader?id=jsHappy',
+        },
+        include: [resolve('src'), resolve('chrome'), resolve('test')]
+      },
+      {
+        test: /\.html$/,
+        use: {
+          loader: 'vue-html-loader'
+        }
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('img/[name].[hash:7].[ext]')
+          name: utils.assetsPath('img/[name].[ext]')
         }
       },
       {
@@ -54,7 +74,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('media/[name].[hash:7].[ext]')
+          name: utils.assetsPath('media/[name].[ext]')
         }
       },
       {
@@ -62,7 +82,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
+          name: utils.assetsPath('fonts/[name].[ext]')
         }
       }
     ]
@@ -78,5 +98,24 @@ module.exports = {
     net: 'empty',
     tls: 'empty',
     child_process: 'empty'
-  }
-}
+  },
+  plugins: [
+    // happypack
+    new HappyPack({
+      id: 'jsHappy',
+      threadPool: happyThreadPool,
+      loaders: [{
+        loader: 'babel-loader',
+        cacheDirectory: true,
+      }]
+    }),
+    new HappyPack({
+      id: 'vueHappy',
+      threadPool: happyThreadPool,
+      loaders: [{
+        loader: 'vue-loader',
+        options: vueLoaderConfig,
+      }]
+    })
+  ],
+};

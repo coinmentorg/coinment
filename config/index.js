@@ -6,7 +6,7 @@ const path = require('path')
 
 module.exports = {
   dev: {
-
+    env: require('./dev.env'),
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
@@ -20,7 +20,7 @@ module.exports = {
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
-    
+
     /**
      * Source Maps
      */
@@ -37,13 +37,18 @@ module.exports = {
   },
 
   build: {
-    // Template for index.html
-    index: path.resolve(__dirname, '../dist/index.html'),
+    env: require('./prod.env'), // 生产环境
+    releaseEnv: require('./prod_release.env'), // 发布环境
 
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
+    index: path.resolve(__dirname, '../dist/index.html'),
+    hotAssetsRoot: path.resolve(__dirname, '../hot-dist'),
+    assetsChromePublicPath: '/',
+    assetsContentScriptPublicPath: '',
+    assetsHotModulePublicPath: 'http://extcdn.azber.com/',
 
     /**
      * Source Maps
@@ -51,7 +56,7 @@ module.exports = {
 
     productionSourceMap: true,
     // https://webpack.js.org/configuration/devtool/#production
-    devtool: '#source-map',
+    devtool: '#cheap-module-source-map',
 
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
